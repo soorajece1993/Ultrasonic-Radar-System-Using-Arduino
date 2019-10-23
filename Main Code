@@ -1,0 +1,127 @@
+#include <Servo.h>
+#include <LiquidCrystal.h>
+const int trigPin = 8;
+const int echoPin = 9;
+#define buzzer 7
+long duration;
+int distance;
+Servo myservo;
+int pos = 0; 
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+   
+
+void setup() {
+  pinMode( 7, OUTPUT);
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT); 
+  Serial.begin(9600); 
+  myservo.attach(6); 
+  lcd.begin(16, 2);
+  lcd.clear();
+     
+}
+
+
+void distance123()
+{
+ digitalWrite(trigPin, LOW);
+ delayMicroseconds(2);
+ digitalWrite(trigPin, HIGH);
+ delayMicroseconds(10);
+ digitalWrite(trigPin, LOW);
+ duration = pulseIn(echoPin, HIGH);
+ distance= duration*0.034/2;
+}
+
+void loop() {
+  for (int i=0;i<=180;i+=5)
+{
+  distance123();
+  Serial.print(i);
+  Serial.print(",");
+  Serial.print(distance);
+  Serial.print(".");
+  myservo.write(i); 
+  
+  if(distance<50)
+{
+  lcd.clear();
+  lcd.print("Obstacle Detected");
+  lcd.setCursor(0,2);
+  lcd.print("Dist:");
+  lcd.print(distance);
+  lcd.print("cm");
+  lcd.print(",");
+  lcd.print("at");
+  lcd.print(i);
+  lcd.print((char)223);
+  digitalWrite( 7, HIGH);
+  delay(500);
+}
+
+else
+{
+  
+  lcd.clear();
+  lcd.print("No Obstacle");
+  lcd.setCursor(0,2);
+  lcd.print("Dist:");
+  lcd.print(distance);
+  lcd.print("cm");
+  lcd.print(",");
+  lcd.print("at");
+  lcd.print(i);
+  lcd.print((char)223);
+  digitalWrite( 7, LOW);
+  delay(500);
+}
+
+  delay(10);
+}
+
+for (int i=180;i>=0;i-=5)
+{
+  distance123();
+  Serial.print(i);
+  Serial.print(",");
+  Serial.print(distance);
+  Serial.print(".");
+
+  if(distance<50)
+{
+ 
+  lcd.clear();
+  lcd.print("Obstacle Detected");
+  lcd.setCursor(0,2);
+  lcd.print("Dist:");
+  lcd.print(distance);
+  lcd.print("cm");
+  lcd.print(",");
+  lcd.print("at");
+  lcd.print(i);
+  lcd.print((char)223);
+  digitalWrite( 7, HIGH);
+  delay(500);
+}
+else
+{
+ 
+  lcd.clear();
+  lcd.print("No Obstacle");
+  lcd.setCursor(0,2);
+  lcd.print("Dist:");
+  lcd.print(distance);
+  lcd.print("cm");
+  lcd.print(",");
+  lcd.print("at");
+  lcd.print(i);
+  lcd.print((char)223);
+  digitalWrite( 7, LOW);
+  delay(500);
+}
+  delay(10);
+  myservo.write(i);
+
+}
+}
